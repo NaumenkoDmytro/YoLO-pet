@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Відео Обробка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            color: #333;
+        }
+        #response {
+            margin-top: 20px;
+        }
+        #response p {
+            font-weight: bold;
+        }
+        #response a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        #response a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Завантажте відео для обробки</h1>
+    <form id="upload-form">
+        <input type="file" id="video-file" name="file" accept="video/*" required>
+        <button type="submit">Завантажити</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('video-file');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                responseDiv.innerHTML = '<p style="color: red;">Будь ласка, виберіть файл.</p>';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/process-video', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    responseDiv.innerHTML = `<p>Обробка завершена. <a href="${data.download_link}">Завантажити оброблене відео</a></p>`;
+                } else {
+                    responseDiv.innerHTML = `<p style="color: red;">Помилка: ${data.error || data.message}</p>`;
+                }
+            } catch (error) {
+                responseDiv.innerHTML = `<p style="color: red;">Виникла помилка при відправленні запиту.</p>`;
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

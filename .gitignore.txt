@@ -1,0 +1,10 @@
+.git
+.gitignore
+venv
+.env
+.venv
+.idea
+__pycache__/
+yolov8n.pt
+processed
+uploads
